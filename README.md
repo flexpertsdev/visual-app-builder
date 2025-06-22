@@ -1,46 +1,153 @@
-# Getting Started with Create React App
+# Visual App Builder
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An AI-powered visual app builder that transforms simple ideas into comprehensive app specifications. Built with React, TypeScript, and AI integration.
 
-## Available Scripts
+![Visual App Builder](https://img.shields.io/badge/React-18.0-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue) ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-blue)
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- **Visual Canvas System**: Drag-and-drop interface with zoom controls for designing app flows
+- **AI-Powered Suggestions**: Proactive AI analysis that suggests features, screens, and improvements
+- **Feature Templates**: Pre-built templates for common app features (authentication, chat, e-commerce, etc.)
+- **Real-time Persistence**: Automatic saving to localStorage
+- **Modern Tech Stack**: React 18, TypeScript, Tailwind CSS, Framer Motion, Zustand
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 🎯 Quick Start
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. Clone the repository:
+```bash
+git clone https://github.com/flexpertsdev/visual-app-builder.git
+cd visual-app-builder
+```
 
-### `npm test`
+2. Install dependencies:
+```bash
+npm install
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. Set up your OpenAI API key:
+   - Create a `.env.local` file in the root directory
+   - Add your OpenAI API key: `REACT_APP_OPENAI_API_KEY=your-key-here`
 
-### `npm run build`
+4. Start the development server:
+```bash
+npm start
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛠️ Technology Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Frontend Framework**: React 18 with TypeScript
+- **Styling**: Tailwind CSS v3
+- **State Management**: Zustand
+- **Animations**: Framer Motion
+- **AI Integration**: OpenAI API
+- **Icons**: Lucide React
+- **Build Tool**: Create React App
 
-### `npm run eject`
+## 📦 Project Structure
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+src/
+├── components/          # React components
+│   ├── Canvas/         # Canvas-related components
+│   ├── Chat/           # AI chat interface
+│   ├── Features/       # Feature management
+│   ├── Layout/         # Layout components
+│   └── UI/             # Reusable UI components
+├── services/           # Business logic and API services
+├── stores/             # Zustand state stores
+├── types/              # TypeScript type definitions
+└── styles/             # Global styles
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🎨 Core Components
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Canvas System
+- **AppCanvas**: Main canvas component with pan and zoom
+- **ScreenCard**: Draggable cards representing app screens
+- **ConnectionLines**: Visual connections between screens
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### AI Integration
+- **AIChat**: Interactive chat interface with the AI assistant
+- **AIService**: Service for OpenAI API integration
+- **Quick Actions**: AI-suggested actions with one-click implementation
 
-## Learn More
+### Feature Management
+- **Feature Templates**: Pre-built app features (auth, chat, social, e-commerce)
+- **Add Feature Menu**: UI for browsing and adding features
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🔧 Configuration
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+REACT_APP_OPENAI_API_KEY=your-openai-api-key
+REACT_APP_VERSION=1.0.0
+```
+
+### Tailwind Configuration
+
+The project uses a custom Tailwind configuration with:
+- Custom color palette (primary, grays, AI purple)
+- Extended spacing values
+- Custom breakpoints
+
+## 📱 Usage
+
+1. **Create a New App**: Describe your app idea in simple terms (e.g., "WhatsApp but red")
+2. **Add Features**: Click the + button to add pre-built features
+3. **Drag and Drop**: Arrange screens on the canvas
+4. **AI Assistance**: The AI will analyze your project and suggest improvements
+5. **Zoom Controls**: Use the zoom buttons to navigate your app design
+
+## 🚀 Available Scripts
+
+- `npm start` - Runs the app in development mode
+- `npm test` - Launches the test runner
+- `npm run build` - Builds the app for production
+- `npm run eject` - Ejects from Create React App (one-way operation)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with Create React App
+- UI components styled with Tailwind CSS
+- State management powered by Zustand
+- Animations by Framer Motion
+- AI capabilities via OpenAI
+
+## 🐛 Known Issues
+
+- AI features require a valid OpenAI API key
+- Canvas performance may vary with large numbers of screens
+- Some browsers may have issues with drag-and-drop on touch devices
+
+## 🚧 Roadmap
+
+- [ ] Export to code functionality
+- [ ] Collaborative editing
+- [ ] More feature templates
+- [ ] Advanced AI customization
+- [ ] Mobile app preview
+- [ ] Integration with design tools
+
+---
+
+Made with ❤️ by [FlexpertsDev](https://github.com/flexpertsdev)
