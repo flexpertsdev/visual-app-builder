@@ -89,6 +89,20 @@ REACT_APP_OPENAI_API_KEY=your-openai-api-key
 REACT_APP_VERSION=1.0.0
 ```
 
+### Deploying to Netlify
+
+1. **Never commit your API key to GitHub!**
+
+2. **Set environment variables in Netlify:**
+   - Go to your site settings in Netlify
+   - Navigate to "Environment variables"
+   - Add: `REACT_APP_OPENAI_API_KEY` with your OpenAI API key value
+
+3. **Local development:**
+   - Copy `.env.example` to `.env.local`
+   - Replace `your-openai-api-key-here` with your actual API key
+   - The `.env.local` file is gitignored and won't be committed
+
 ### Tailwind Configuration
 
 The project uses a custom Tailwind configuration with:
