@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Layout } from 'lucide-react';
 import { Button } from './UI/Button';
 import { useAppStore } from '../stores/appStore';
+import { TemplateDialog } from './Templates/TemplateDialog';
 
 export const WelcomeScreen: React.FC = () => {
   const [input, setInput] = useState('');
+  const [showTemplates, setShowTemplates] = useState(false);
   const { createProject } = useAppStore();
   
   const examples = [
@@ -64,16 +66,32 @@ export const WelcomeScreen: React.FC = () => {
             />
           </div>
           
-          <Button
-            onClick={handleCreate}
-            size="lg"
-            className="w-full"
-            icon={Sparkles}
-          >
-            Generate App
-          </Button>
+          <div className="flex space-x-3">
+            <Button
+              onClick={handleCreate}
+              size="lg"
+              className="flex-1"
+              icon={Sparkles}
+            >
+              Generate App
+            </Button>
+            <Button
+              onClick={() => setShowTemplates(true)}
+              size="lg"
+              variant="secondary"
+              className="flex-1"
+              icon={Layout}
+            >
+              Choose Template
+            </Button>
+          </div>
         </div>
       </motion.div>
+      
+      <TemplateDialog
+        isOpen={showTemplates}
+        onClose={() => setShowTemplates(false)}
+      />
     </div>
   );
 };
