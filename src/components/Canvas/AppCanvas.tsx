@@ -109,7 +109,7 @@ export const AppCanvas: React.FC<AppCanvasProps> = ({ screens, onScreenUpdate })
           cursor: isAddMode ? 'crosshair' : isDragging ? 'grabbing' : 'grab' 
         }}
       >
-      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       
       <motion.div
         style={{

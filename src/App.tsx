@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Header } from './components/Layout/Header';
+import { LeftPanel } from './components/Layout/LeftPanel';
 import { AppCanvas } from './components/Canvas/AppCanvas';
-import { AIChat } from './components/Chat/AIChat';
 import { AddButton } from './components/Features/AddButton';
 import { useAppStore } from './stores/appStore';
 import { useCanvasStore } from './stores/canvasStore';
@@ -33,14 +33,17 @@ function App() {
         onZoomChange={setZoom}
       />
       
-      <div className="flex-1 relative">
-        <AppCanvas
-          screens={currentProject.screens}
-          onScreenUpdate={updateScreen}
-        />
+      <div className="flex-1 relative flex">
+        <LeftPanel />
         
-        <AIChat />
-        <AddButton />
+        <div className="flex-1 relative">
+          <AppCanvas
+            screens={currentProject.screens}
+            onScreenUpdate={updateScreen}
+          />
+          
+          <AddButton />
+        </div>
       </div>
     </div>
   );

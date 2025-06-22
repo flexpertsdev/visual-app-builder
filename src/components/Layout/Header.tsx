@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, MessageSquare, User, ZoomIn, ZoomOut } from 'lucide-react';
+import { Settings, User, ZoomIn, ZoomOut } from 'lucide-react';
 import { Button } from '../UI/Button';
 import { useCanvasStore, ZOOM_LEVELS } from '../../stores/canvasStore';
 
@@ -70,9 +70,6 @@ export const Header: React.FC<HeaderProps> = ({ projectName, onZoomChange, curre
       </div>
       
       <div className="flex items-center space-x-2">
-        <Button variant="ghost" size="sm" icon={MessageSquare}>
-          <span className="sr-only">Messages</span>
-        </Button>
         <Button variant="ghost" size="sm" icon={User}>
           <span className="sr-only">Profile</span>
         </Button>
