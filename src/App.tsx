@@ -1,24 +1,47 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { Header } from './components/Layout/Header';
+import { AppCanvas } from './components/Canvas/AppCanvas';
+import { AIChat } from './components/Chat/AIChat';
+import { AddButton } from './components/Features/AddButton';
+import { useAppStore } from './stores/appStore';
+import { useCanvasStore } from './stores/canvasStore';
+import { WelcomeScreen } from './components/WelcomeScreen';
+import { ProjectStore } from './services/projectStore';
 
 function App() {
+  const { currentProject, loadProject, updateScreen } = useAppStore();
+  const { zoom, setZoom } = useCanvasStore();
+  const projectStore = new ProjectStore();
+  
+  useEffect(() => {
+    // Try to load last project
+    const lastProjectId = projectStore.getCurrentProjectId();
+    if (lastProjectId) {
+      loadProject(lastProjectId);
+    }
+  }, []);
+  
+  if (!currentProject) {
+    return <WelcomeScreen />;
+  }
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="h-screen flex flex-col bg-gray-50">
+      <Header
+        projectName={currentProject.name}
+        currentZoom={zoom}
+        onZoomChange={setZoom}
+      />
+      
+      <div className="flex-1 relative">
+        <AppCanvas
+          screens={currentProject.screens}
+          onScreenUpdate={updateScreen}
+        />
+        
+        <AIChat />
+        <AddButton />
+      </div>
     </div>
   );
 }
