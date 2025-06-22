@@ -1,7 +1,8 @@
-import React from 'react';
-import { Settings, User, ZoomIn, ZoomOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { Settings, User, ZoomIn, ZoomOut, Download } from 'lucide-react';
 import { Button } from '../UI/Button';
 import { useCanvasStore, ZOOM_LEVELS } from '../../stores/canvasStore';
+import { ExportDialog } from '../Export/ExportDialog';
 
 interface HeaderProps {
   projectName: string;
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ projectName, onZoomChange, currentZoom }) => {
   const { zoomLevel } = useCanvasStore();
+  const [showExportDialog, setShowExportDialog] = useState(false);
   
   return (
     <header className="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between">
@@ -70,10 +72,23 @@ export const Header: React.FC<HeaderProps> = ({ projectName, onZoomChange, curre
       </div>
       
       <div className="flex items-center space-x-2">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          icon={Download}
+          onClick={() => setShowExportDialog(true)}
+        >
+          Export
+        </Button>
         <Button variant="ghost" size="sm" icon={User}>
           <span className="sr-only">Profile</span>
         </Button>
       </div>
+      
+      <ExportDialog 
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+      />
     </header>
   );
 };
