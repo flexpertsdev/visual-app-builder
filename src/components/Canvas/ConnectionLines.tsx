@@ -17,7 +17,6 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({ screens }) => 
   const getCurvedPath = (from: { x: number; y: number }, to: { x: number; y: number }) => {
     const dx = to.x - from.x;
     const dy = to.y - from.y;
-    const dr = Math.sqrt(dx * dx + dy * dy);
     const offsetX = dx * 0.3;
     const offsetY = dy * 0.3;
     

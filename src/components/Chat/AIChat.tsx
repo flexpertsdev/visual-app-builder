@@ -20,34 +20,7 @@ export const AIChat: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  useEffect(() => {
-    if (currentProject) {
-      analyzeProject();
-    }
-  }, [currentProject]);
-  
-  const analyzeProject = async () => {
-    if (!currentProject) return;
-    
-    const analysis = await aiService.current.analyzeProject(currentProject);
-    
-    if (analysis.suggestions.length > 0) {
-      const message: ChatMessage = {
-        id: Date.now().toString(),
-        type: 'assistant',
-        content: analysis.suggestions[0].description,
-        timestamp: new Date(),
-        quickActions: analysis.nextSteps.slice(0, 3).map(step => ({
-          text: step.buttonText,
-          action: () => executeStep(step)
-        }))
-      };
-      
-      addMessage(message);
-    }
-  };
-  
-  const executeStep = async (step: NextStep) => {
+  const executeStep = React.useCallback(async (step: NextStep) => {
     if (!currentProject) return;
     
     const modifications = await aiService.current.generateModifications(step, currentProject);
@@ -69,7 +42,34 @@ export const AIChat: React.FC = () => {
       content: `✅ ${step.title} completed!`,
       timestamp: new Date()
     });
-  };
+  }, [currentProject, updateProject, addMessage]);
+  
+  const analyzeProject = React.useCallback(async () => {
+    if (!currentProject) return;
+    
+    const analysis = await aiService.current.analyzeProject(currentProject);
+    
+    if (analysis.suggestions.length > 0) {
+      const message: ChatMessage = {
+        id: Date.now().toString(),
+        type: 'assistant',
+        content: analysis.suggestions[0].description,
+        timestamp: new Date(),
+        quickActions: analysis.nextSteps.slice(0, 3).map((step: NextStep) => ({
+          text: step.buttonText,
+          action: () => executeStep(step)
+        }))
+      };
+      
+      addMessage(message);
+    }
+  }, [currentProject, addMessage, executeStep]);
+  
+  useEffect(() => {
+    if (currentProject) {
+      analyzeProject();
+    }
+  }, [currentProject, analyzeProject]);
   
   return (
     <AnimatePresence>

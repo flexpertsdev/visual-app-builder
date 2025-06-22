@@ -11,15 +11,15 @@ import { ProjectStore } from './services/projectStore';
 function App() {
   const { currentProject, loadProject, updateScreen } = useAppStore();
   const { zoom, setZoom } = useCanvasStore();
-  const projectStore = new ProjectStore();
   
   useEffect(() => {
     // Try to load last project
+    const projectStore = new ProjectStore();
     const lastProjectId = projectStore.getCurrentProjectId();
     if (lastProjectId) {
       loadProject(lastProjectId);
     }
-  }, []);
+  }, [loadProject]);
   
   if (!currentProject) {
     return <WelcomeScreen />;
