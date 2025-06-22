@@ -60,7 +60,10 @@ export const AppCanvas: React.FC<AppCanvasProps> = ({ screens, onScreenUpdate })
   };
   
   const handleCanvasClick = (e: React.MouseEvent) => {
-    if (isAddMode && e.target === canvasRef.current) {
+    const isCanvasBackground = e.target === canvasRef.current || 
+                              (e.target as HTMLElement).classList.contains('bg-grid-pattern');
+    
+    if (isAddMode && isCanvasBackground) {
       const rect = canvasRef.current?.getBoundingClientRect();
       if (rect) {
         setAddPosition({
@@ -74,7 +77,13 @@ export const AppCanvas: React.FC<AppCanvasProps> = ({ screens, onScreenUpdate })
   };
   
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.target === canvasRef.current && !isAddMode) {
+    // Check if we clicked on the canvas background (not on a child element)
+    const isCanvasBackground = e.target === canvasRef.current || 
+                              e.target === canvasRef.current?.querySelector('.bg-grid-pattern') ||
+                              (e.target as HTMLElement).classList.contains('canvas-content');
+    
+    if (isCanvasBackground && !isAddMode && e.button === 0) {
+      e.preventDefault();
       setDragging(true);
       const startX = e.clientX - pan.x;
       const startY = e.clientY - pan.y;
@@ -116,7 +125,7 @@ export const AppCanvas: React.FC<AppCanvasProps> = ({ screens, onScreenUpdate })
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom / 100})`,
           transformOrigin: '0 0'
         }}
-        className="relative"
+        className="relative canvas-content"
       >
         {/* Journey overlay at highest zoom out */}
         {zoomLevel.showJourneys && currentProject?.journeys && (

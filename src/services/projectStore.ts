@@ -28,6 +28,10 @@ export class ProjectStore {
     return data ? JSON.parse(data) : [];
   }
   
+  listProjects(): AppProject[] {
+    return this.getAllProjects();
+  }
+  
   getCurrentProjectId(): string | null {
     return localStorage.getItem(ProjectStore.CURRENT_PROJECT_KEY);
   }

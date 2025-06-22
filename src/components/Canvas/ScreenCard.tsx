@@ -46,6 +46,8 @@ export const ScreenCard: React.FC<ScreenCardProps> = ({ screen, zoomLevel, onUpd
     <motion.div
       drag
       dragMomentum={false}
+      dragElastic={0.1}
+      whileDrag={{ scale: 1.05, zIndex: 100 }}
       onDragEnd={(e, info) => {
         onUpdate({
           position: {

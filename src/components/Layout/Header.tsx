@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Settings, User, ZoomIn, ZoomOut, Download, Palette } from 'lucide-react';
+import { User, ZoomIn, ZoomOut, Download, Palette, FolderOpen } from 'lucide-react';
 import { Button } from '../UI/Button';
 import { useCanvasStore, ZOOM_LEVELS } from '../../stores/canvasStore';
 import { ExportDialog } from '../Export/ExportDialog';
 import { DesignSystemEditor } from '../DesignSystem/DesignSystemEditor';
+import { ProjectDashboard } from '../Dashboard/ProjectDashboard';
 
 interface HeaderProps {
   projectName: string;
@@ -15,12 +16,18 @@ export const Header: React.FC<HeaderProps> = ({ projectName, onZoomChange, curre
   const { zoomLevel } = useCanvasStore();
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showDesignSystem, setShowDesignSystem] = useState(false);
+  const [showProjectDashboard, setShowProjectDashboard] = useState(false);
   
   return (
     <header className="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between">
       <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="sm" icon={Settings}>
-          <span className="sr-only">Settings</span>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          icon={FolderOpen}
+          onClick={() => setShowProjectDashboard(true)}
+        >
+          Projects
         </Button>
         <h1 className="text-lg font-semibold">{projectName}</h1>
       </div>
@@ -103,6 +110,11 @@ export const Header: React.FC<HeaderProps> = ({ projectName, onZoomChange, curre
       <DesignSystemEditor
         isOpen={showDesignSystem}
         onClose={() => setShowDesignSystem(false)}
+      />
+      
+      <ProjectDashboard
+        isOpen={showProjectDashboard}
+        onClose={() => setShowProjectDashboard(false)}
       />
     </header>
   );
