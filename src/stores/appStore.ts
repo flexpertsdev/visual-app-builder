@@ -76,7 +76,8 @@ export const useAppStore = create<AppState & AppActions>((set, get) => ({
           industry: ''
         }
       },
-      lastModified: new Date()
+      lastModified: new Date(),
+      updatedAt: new Date()
     };
     
     set({ currentProject: newProject });

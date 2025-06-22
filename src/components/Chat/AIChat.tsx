@@ -19,11 +19,16 @@ export const AIChat: React.FC<AIChatProps> = ({ inPanel = false }) => {
   const [input, setInput] = React.useState('');
   const [isProcessing, setIsProcessing] = React.useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const aiService = useRef(new AIService());
+  const aiService = useRef(AIService.getInstance());
   
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    // Ensure AI service is initialized with latest API key
+    aiService.current.initialize();
+  }, []);
   
   const executeStep = React.useCallback(async (step: NextStep) => {
     if (!currentProject) return;

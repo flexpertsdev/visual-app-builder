@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { User, ZoomIn, ZoomOut, Download, Palette, FolderOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ZoomIn, ZoomOut, Download, Palette, FolderOpen, Home, Settings, Eye } from 'lucide-react';
 import { Button } from '../UI/Button';
 import { useCanvasStore, ZOOM_LEVELS } from '../../stores/canvasStore';
 import { ExportDialog } from '../Export/ExportDialog';
 import { DesignSystemEditor } from '../DesignSystem/DesignSystemEditor';
 import { ProjectDashboard } from '../Dashboard/ProjectDashboard';
+
+const PreviewDialog = React.lazy(() => 
+  import('../Preview/PreviewDialog').then(module => ({ default: module.PreviewDialog }))
+);
 
 interface HeaderProps {
   projectName: string;
@@ -13,14 +18,24 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ projectName, onZoomChange, currentZoom }) => {
+  const navigate = useNavigate();
   const { zoomLevel } = useCanvasStore();
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showDesignSystem, setShowDesignSystem] = useState(false);
   const [showProjectDashboard, setShowProjectDashboard] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   
   return (
     <header className="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between">
       <div className="flex items-center space-x-4">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          icon={Home}
+          onClick={() => navigate('/')}
+        >
+          Dashboard
+        </Button>
         <Button 
           variant="ghost" 
           size="sm" 
@@ -84,6 +99,14 @@ export const Header: React.FC<HeaderProps> = ({ projectName, onZoomChange, curre
         <Button 
           variant="ghost" 
           size="sm" 
+          icon={Eye}
+          onClick={() => setShowPreview(true)}
+        >
+          Preview
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="sm" 
           icon={Palette}
           onClick={() => setShowDesignSystem(true)}
         >
@@ -97,8 +120,13 @@ export const Header: React.FC<HeaderProps> = ({ projectName, onZoomChange, curre
         >
           Export
         </Button>
-        <Button variant="ghost" size="sm" icon={User}>
-          <span className="sr-only">Profile</span>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          icon={Settings}
+          onClick={() => navigate('/settings')}
+        >
+          <span className="sr-only">Settings</span>
         </Button>
       </div>
       
@@ -116,6 +144,16 @@ export const Header: React.FC<HeaderProps> = ({ projectName, onZoomChange, curre
         isOpen={showProjectDashboard}
         onClose={() => setShowProjectDashboard(false)}
       />
+      
+      {/* Lazy load PreviewDialog */}
+      {showPreview && (
+        <React.Suspense fallback={null}>
+          <PreviewDialog
+            isOpen={showPreview}
+            onClose={() => setShowPreview(false)}
+          />
+        </React.Suspense>
+      )}
     </header>
   );
 };

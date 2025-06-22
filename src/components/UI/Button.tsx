@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 
 interface ButtonProps {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'ai';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'ai' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   icon?: LucideIcon;
   iconPosition?: 'left' | 'right';
@@ -19,7 +19,8 @@ const buttonVariants = {
   secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300',
   ghost: 'hover:bg-gray-100 text-gray-700',
   danger: 'bg-red-600 hover:bg-red-700 text-white',
-  ai: 'bg-purple-600 hover:bg-purple-700 text-white shadow-sm'
+  ai: 'bg-purple-600 hover:bg-purple-700 text-white shadow-sm',
+  outline: 'border border-gray-300 hover:bg-gray-50 text-gray-700'
 };
 
 const buttonSizes = {

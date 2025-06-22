@@ -8,6 +8,8 @@ export interface AppProject {
   features: FeatureInstance[];
   aiContext: AIContext;
   lastModified: Date;
+  updatedAt?: Date;
+  starred?: boolean;
 }
 
 export interface DesignSystem {

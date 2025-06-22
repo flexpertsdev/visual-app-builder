@@ -1,16 +1,13 @@
 import React, { useEffect } from 'react';
-import { Header } from './components/Layout/Header';
-import { LeftPanel } from './components/Layout/LeftPanel';
-import { AppCanvas } from './components/Canvas/AppCanvas';
-import { AddButton } from './components/Features/AddButton';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Dashboard } from './pages/Dashboard';
+import { Editor } from './pages/Editor';
+import { Settings } from './pages/Settings';
 import { useAppStore } from './stores/appStore';
-import { useCanvasStore } from './stores/canvasStore';
-import { WelcomeScreen } from './components/WelcomeScreen';
 import { ProjectStore } from './services/projectStore';
 
 function App() {
-  const { currentProject, loadProject, updateScreen } = useAppStore();
-  const { zoom, setZoom } = useCanvasStore();
+  const { currentProject, loadProject } = useAppStore();
   
   useEffect(() => {
     // Try to load last project
@@ -21,31 +18,15 @@ function App() {
     }
   }, [loadProject]);
   
-  if (!currentProject) {
-    return <WelcomeScreen />;
-  }
-  
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <Header
-        projectName={currentProject.name}
-        currentZoom={zoom}
-        onZoomChange={setZoom}
-      />
-      
-      <div className="flex-1 relative flex">
-        <LeftPanel />
-        
-        <div className="flex-1 relative">
-          <AppCanvas
-            screens={currentProject.screens}
-            onScreenUpdate={updateScreen}
-          />
-          
-          <AddButton />
-        </div>
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/editor" element={currentProject ? <Editor /> : <Navigate to="/" />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 }
 
