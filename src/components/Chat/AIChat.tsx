@@ -40,6 +40,20 @@ export const AIChat: React.FC = () => {
           states: mod.changes.states || [{ name: 'default', isDefault: true }]
         };
         addScreen(newScreen);
+        
+        // Add screen to journey if specified
+        if (mod.changes.journeyId && currentProject) {
+          const journey = currentProject.journeys.find(j => j.id === mod.changes.journeyId);
+          if (journey) {
+            updateProject({
+              journeys: currentProject.journeys.map(j => 
+                j.id === journey.id 
+                  ? { ...j, screens: [...j.screens, newScreen.id] }
+                  : j
+              )
+            });
+          }
+        }
       }
       
       if (mod.type === 'update_screen') {
@@ -136,6 +150,20 @@ export const AIChat: React.FC = () => {
               states: mod.changes.states || [{ name: 'default', isDefault: true }]
             };
             addScreen(newScreen);
+            
+            // Add screen to journey if specified
+            if (mod.changes.journeyId && currentProject) {
+              const journey = currentProject.journeys.find(j => j.id === mod.changes.journeyId);
+              if (journey) {
+                updateProject({
+                  journeys: currentProject.journeys.map(j => 
+                    j.id === journey.id 
+                      ? { ...j, screens: [...j.screens, newScreen.id] }
+                      : j
+                  )
+                });
+              }
+            }
           }
           
           if (mod.type === 'update_screen') {

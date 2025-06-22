@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import { useCanvasStore } from '../../stores/canvasStore';
 import { ScreenCard } from './ScreenCard';
 import { ConnectionLines } from './ConnectionLines';
+import { JourneyOverlay } from './JourneyOverlay';
 import { Screen } from '../../types/app';
+import { useAppStore } from '../../stores/appStore';
 
 interface AppCanvasProps {
   screens: Screen[];
@@ -12,7 +14,8 @@ interface AppCanvasProps {
 
 export const AppCanvas: React.FC<AppCanvasProps> = ({ screens, onScreenUpdate }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const { zoom, pan, isDragging, setDragging, setPan } = useCanvasStore();
+  const { zoom, pan, isDragging, setDragging, setPan, zoomLevel } = useCanvasStore();
+  const { currentProject } = useAppStore();
   
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.target === canvasRef.current) {
@@ -54,12 +57,25 @@ export const AppCanvas: React.FC<AppCanvasProps> = ({ screens, onScreenUpdate })
         }}
         className="relative"
       >
-        <ConnectionLines screens={screens} />
+        {/* Journey overlay at highest zoom out */}
+        {zoomLevel.showJourneys && currentProject?.journeys && (
+          <JourneyOverlay 
+            journeys={currentProject.journeys} 
+            screens={screens} 
+          />
+        )}
         
+        {/* Connection lines when appropriate */}
+        {zoomLevel.showConnections && (
+          <ConnectionLines screens={screens} />
+        )}
+        
+        {/* Screen cards with appropriate detail level */}
         {screens.map(screen => (
           <ScreenCard
             key={screen.id}
             screen={screen}
+            zoomLevel={zoomLevel}
             onUpdate={(updates) => onScreenUpdate(screen.id, updates)}
           />
         ))}

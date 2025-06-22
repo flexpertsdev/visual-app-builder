@@ -46,7 +46,20 @@ export const useAppStore = create<AppState & AppActions>((set, get) => ({
         spacing: 'normal'
       },
       screens: [],
-      journeys: [],
+      journeys: [
+        {
+          id: 'onboarding',
+          name: 'User Onboarding',
+          screens: [],
+          description: 'First-time user experience'
+        },
+        {
+          id: 'core-flow',
+          name: 'Core Experience',
+          screens: [],
+          description: 'Main app functionality'
+        }
+      ],
       features: [],
       aiContext: {
         analysisHistory: [],

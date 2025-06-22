@@ -265,7 +265,8 @@ export class AIService {
               id: 'login',
               name: 'Login',
               type: 'screen',
-              position: { x: 200, y: 100 }
+              position: { x: 200, y: 100 },
+              journeyId: 'onboarding'
             },
             previewable: true
           },
@@ -276,7 +277,8 @@ export class AIService {
               id: 'signup',
               name: 'Sign Up',
               type: 'screen',
-              position: { x: 400, y: 100 }
+              position: { x: 400, y: 100 },
+              journeyId: 'onboarding'
             },
             previewable: true
           }
@@ -305,7 +307,8 @@ export class AIService {
               id: 'home',
               name: 'Home',
               type: 'screen',
-              position: { x: 300, y: 200 }
+              position: { x: 300, y: 200 },
+              journeyId: 'core-flow'
             },
             previewable: true
           }
