@@ -11,8 +11,9 @@ import { ChatMessage } from '../../types/ai';
 
 export const AIChat: React.FC = () => {
   const { messages, isOpen, toggleChat, addMessage } = useChatStore();
-  const { currentProject, updateProject } = useAppStore();
+  const { currentProject, updateProject, addScreen, updateScreen } = useAppStore();
   const [input, setInput] = React.useState('');
+  const [isProcessing, setIsProcessing] = React.useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const aiService = useRef(new AIService());
   
@@ -23,26 +24,50 @@ export const AIChat: React.FC = () => {
   const executeStep = React.useCallback(async (step: NextStep) => {
     if (!currentProject) return;
     
+    setIsProcessing(true);
     const modifications = await aiService.current.generateModifications(step, currentProject);
     
     // Apply modifications to project
     modifications.forEach(mod => {
       if (mod.type === 'add_screen') {
-        // Add screen logic
-      } else if (mod.type === 'update_design_system') {
+        const newScreen = {
+          id: mod.changes.id || `screen-${Date.now()}`,
+          name: mod.changes.name || 'New Screen',
+          type: mod.changes.type || 'default',
+          position: mod.changes.position || { x: 100 + Math.random() * 300, y: 100 + Math.random() * 200 },
+          connections: mod.changes.connections || [],
+          size: mod.changes.size || { width: 256, height: 384 },
+          states: mod.changes.states || [{ name: 'default', isDefault: true }]
+        };
+        addScreen(newScreen);
+      }
+      
+      if (mod.type === 'update_screen') {
+        if (mod.target) {
+          updateScreen(mod.target, mod.changes);
+        }
+      }
+      
+      if (mod.type === 'update_design_system') {
         updateProject({
           designSystem: { ...currentProject.designSystem, ...mod.changes }
         });
       }
+      
+      if (mod.type === 'add_feature') {
+        // Features are managed separately, not as part of screens
+        // TODO: Implement feature addition logic
+      }
     });
     
+    setIsProcessing(false);
     addMessage({
       id: Date.now().toString(),
       type: 'assistant',
       content: `✅ ${step.title} completed!`,
       timestamp: new Date()
     });
-  }, [currentProject, updateProject, addMessage]);
+  }, [currentProject, updateProject, addMessage, addScreen, updateScreen]);
   
   const analyzeProject = React.useCallback(async () => {
     if (!currentProject) return;
@@ -71,6 +96,84 @@ export const AIChat: React.FC = () => {
     }
   }, [currentProject, analyzeProject]);
   
+  const handleSendMessage = React.useCallback(async () => {
+    if (!input.trim() || !currentProject || isProcessing) return;
+    
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      type: 'user',
+      content: input,
+      timestamp: new Date()
+    };
+    
+    addMessage(userMessage);
+    setInput('');
+    setIsProcessing(true);
+    
+    try {
+      // Process natural language input
+      const response = await aiService.current.processUserRequest(input, currentProject);
+      
+      // Add AI response
+      const aiMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: response.message,
+        timestamp: new Date()
+      };
+      
+      if (response.modifications && response.modifications.length > 0) {
+        // Apply modifications
+        response.modifications.forEach(mod => {
+          if (mod.type === 'add_screen') {
+            const newScreen = {
+              id: mod.changes.id || `screen-${Date.now()}`,
+              name: mod.changes.name || 'New Screen',
+              type: mod.changes.type || 'default',
+              position: mod.changes.position || { x: 100 + Math.random() * 300, y: 100 + Math.random() * 200 },
+                  connections: mod.changes.connections || [],
+              size: mod.changes.size || { width: 256, height: 384 },
+              states: mod.changes.states || [{ name: 'default', isDefault: true }]
+            };
+            addScreen(newScreen);
+          }
+          
+          if (mod.type === 'update_screen') {
+            if (mod.target) {
+              updateScreen(mod.target, mod.changes);
+            }
+          }
+          
+          if (mod.type === 'update_design_system') {
+            updateProject({
+              designSystem: { ...currentProject.designSystem, ...mod.changes }
+            });
+          }
+        });
+        
+        // Add quick actions if available
+        if (response.nextSteps && response.nextSteps.length > 0) {
+          aiMessage.quickActions = response.nextSteps.slice(0, 3).map(step => ({
+            text: step.buttonText,
+            action: () => executeStep(step)
+          }));
+        }
+      }
+      
+      addMessage(aiMessage);
+    } catch (error) {
+      console.error('Error processing message:', error);
+      addMessage({
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: 'I encountered an error processing your request. Please try again.',
+        timestamp: new Date()
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [input, currentProject, isProcessing, addMessage, addScreen, updateScreen, updateProject, executeStep]);
+  
   return (
     <AnimatePresence>
       {isOpen && (
@@ -94,6 +197,11 @@ export const AIChat: React.FC = () => {
             {messages.map(message => (
               <ChatMessageComponent key={message.id} message={message} />
             ))}
+            {isProcessing && (
+              <div className="flex items-center space-x-2 text-gray-500">
+                <div className="animate-pulse">AI is thinking...</div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
           
@@ -109,11 +217,15 @@ export const AIChat: React.FC = () => {
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && input.trim()) {
-                    // Handle send message
+                    handleSendMessage();
                   }
                 }}
               />
-              <button className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+              <button 
+                onClick={handleSendMessage}
+                disabled={!input.trim()}
+                className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <Send className="w-4 h-4" />
               </button>
             </div>

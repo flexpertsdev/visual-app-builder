@@ -120,7 +120,7 @@ export interface NextStep {
 }
 
 export interface ProjectModification {
-  type: 'add_screen' | 'update_design_system' | 'add_feature' | 'modify_flow';
+  type: 'add_screen' | 'update_screen' | 'update_design_system' | 'add_feature' | 'modify_flow';
   target: string;
   changes: any;
   previewable: boolean;

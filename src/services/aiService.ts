@@ -1,6 +1,12 @@
 import OpenAI from 'openai';
 import { AppProject, AIAnalysis, NextStep, ProjectModification } from '../types/app';
 
+interface ProcessUserRequestResponse {
+  message: string;
+  modifications?: ProjectModification[];
+  nextSteps?: NextStep[];
+}
+
 export class AIService {
   private openai: OpenAI | null = null;
   private isConfigured: boolean = false;
@@ -79,7 +85,7 @@ export class AIService {
     Current Project: ${JSON.stringify(project)}
     
     Return array of modifications with:
-    - type: 'add_screen' | 'update_design_system' | 'add_feature' | 'modify_flow'
+    - type: 'add_screen' | 'update_screen' | 'update_design_system' | 'add_feature' | 'modify_flow'
     - target: string (id of target element)
     - changes: object with specific changes
     - previewable: boolean
@@ -126,9 +132,9 @@ export class AIService {
           id: 'add-auth',
           title: 'Add Authentication',
           description: 'Add login and signup screens to your app',
-          priority: 'high',
-          category: 'Security',
-          action: 'add_screens',
+          priority: 1,
+          category: 'features',
+          action: 'add_screen',
           buttonText: 'Add Auth Screens',
           autoExecutable: true
         }
@@ -138,7 +144,7 @@ export class AIService {
   }
 
   private getMockModifications(step: NextStep, project: AppProject): ProjectModification[] {
-    if (step.action === 'add_screens' && step.id === 'add-auth') {
+    if (step.action === 'add_screen' && step.id === 'add-auth') {
       return [
         {
           type: 'add_screen',
@@ -169,5 +175,186 @@ export class AIService {
       ];
     }
     return [];
+  }
+  
+  async processUserRequest(
+    userInput: string,
+    project: AppProject
+  ): Promise<ProcessUserRequestResponse> {
+    if (!this.isConfigured || !this.openai) {
+      return this.getMockUserRequestResponse(userInput, project);
+    }
+
+    const prompt = `
+    You are an AI assistant helping to build an app. The user has made a request in natural language.
+    
+    User Request: "${userInput}"
+    
+    Current Project State:
+    - Name: ${project.name}
+    - Description: ${project.description}
+    - Screens: ${project.screens.map(s => s.name).join(', ')}
+    - Features: ${project.features.map(f => f.name).join(', ')}
+    
+    Analyze the request and return:
+    1. A friendly message explaining what you're doing
+    2. An array of modifications to make
+    3. Suggested next steps
+    
+    Return in JSON format:
+    {
+      "message": "string",
+      "modifications": [
+        {
+          "type": "add_screen" | "update_screen" | "update_design_system" | "add_feature",
+          "target": "string (id if updating)",
+          "changes": { ... },
+          "previewable": boolean
+        }
+      ],
+      "nextSteps": [
+        {
+          "id": "string",
+          "title": "string",
+          "description": "string",
+          "priority": number,
+          "category": "string",
+          "action": "string",
+          "buttonText": "string",
+          "autoExecutable": boolean
+        }
+      ]
+    }
+    `;
+
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+        response_format: { type: "json_object" }
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || '{}');
+      
+      return {
+        message: result.message || "I'll help you with that!",
+        modifications: result.modifications || [],
+        nextSteps: result.nextSteps || []
+      };
+    } catch (error) {
+      console.error('Error processing user request:', error);
+      return this.getMockUserRequestResponse(userInput, project);
+    }
+  }
+
+  private getMockUserRequestResponse(
+    userInput: string,
+    project: AppProject
+  ): ProcessUserRequestResponse {
+    const input = userInput.toLowerCase();
+    
+    if (input.includes('login') || input.includes('auth') || input.includes('sign')) {
+      return {
+        message: "I'll add authentication screens to your app.",
+        modifications: [
+          {
+            type: 'add_screen',
+            target: 'screens',
+            changes: {
+              id: 'login',
+              name: 'Login',
+              type: 'screen',
+              position: { x: 200, y: 100 }
+            },
+            previewable: true
+          },
+          {
+            type: 'add_screen',
+            target: 'screens',
+            changes: {
+              id: 'signup',
+              name: 'Sign Up',
+              type: 'screen',
+              position: { x: 400, y: 100 }
+            },
+            previewable: true
+          }
+        ],
+        nextSteps: [
+          {
+            id: 'add-forgot-password',
+            title: 'Add Password Reset',
+            description: 'Add a forgot password flow',
+            priority: 2,
+            category: 'features',
+            action: 'add_screen',
+            buttonText: 'Add Password Reset',
+            autoExecutable: true
+          }
+        ]
+      };
+    } else if (input.includes('home') || input.includes('dashboard') || input.includes('main')) {
+      return {
+        message: "I'll add a home screen to your app.",
+        modifications: [
+          {
+            type: 'add_screen',
+            target: 'screens',
+            changes: {
+              id: 'home',
+              name: 'Home',
+              type: 'screen',
+              position: { x: 300, y: 200 }
+            },
+            previewable: true
+          }
+        ]
+      };
+    } else if (input.includes('blue') || input.includes('color') || input.includes('theme')) {
+      return {
+        message: "I'll update your app's color theme.",
+        modifications: [
+          {
+            type: 'update_design_system',
+            target: 'designSystem',
+            changes: {
+              colors: {
+                ...project.designSystem.colors,
+                primary: '#3B82F6',
+                primaryHover: '#2563EB'
+              }
+            },
+            previewable: true
+          }
+        ]
+      };
+    }
+    
+    return {
+      message: "I understand you want to update your app. Could you be more specific about what you'd like to add or change?",
+      nextSteps: [
+        {
+          id: 'add-auth',
+          title: 'Add Authentication',
+          description: 'Add login and signup screens',
+          priority: 1,
+          category: 'features',
+          action: 'add_screen',
+          buttonText: 'Add Auth',
+          autoExecutable: true
+        },
+        {
+          id: 'add-home',
+          title: 'Add Home Screen',
+          description: 'Add a main dashboard screen',
+          priority: 1,
+          category: 'flows',
+          action: 'add_screen',
+          buttonText: 'Add Home',
+          autoExecutable: true
+        }
+      ]
+    };
   }
 }
